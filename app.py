@@ -11,9 +11,9 @@ from db import (
     init_db, register_user, authenticate_user, 
     add_notice, delete_notice, get_notices, get_notice_by_id
 )
-from model import predict_category
-from engine import generate_summary, detect_deadlines
-from assistant import get_chatbot_response
+from .model import predict_category
+from .engine import generate_summary, detect_deadlines
+from .assistant import get_chatbot_response
 
 
 # from db import (
