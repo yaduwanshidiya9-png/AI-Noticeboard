@@ -7,13 +7,21 @@ from PIL import Image
 # Ensure parent directory is in path to import modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database.db import (
-    init_db, register_user, authenticate_user, 
+# from db import (
+#     init_db, register_user, authenticate_user, 
+#     add_notice, delete_notice, get_notices, get_notice_by_id
+# )
+# from classifier.model import predict_category
+# from summarizer.engine import generate_summary, detect_deadlines
+# from chatbot.assistant import get_chatbot_response
+
+from db import (
+    init_db, register_user, authenticate_user,
     add_notice, delete_notice, get_notices, get_notice_by_id
 )
-from classifier.model import predict_category
-from summarizer.engine import generate_summary, detect_deadlines
-from chatbot.assistant import get_chatbot_response
+from model import predict_category
+from engine import generate_summary, detect_deadlines
+from assistant import get_chatbot_response
 
 # Initialize Flask app
 app = Flask(__name__)
