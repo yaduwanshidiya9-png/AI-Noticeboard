@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # API Server Configuration
-BACKEND_URL = "http://localhost:5000"
+BACKEND_URL = "https://ai-noticeboard-pn3r.onrender.com"
 
 def is_backend_online():
     try:
