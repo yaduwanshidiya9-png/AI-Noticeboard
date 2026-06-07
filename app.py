@@ -59,13 +59,17 @@ def perform_ocr(file_path):
     elif ext in ['.png', '.jpg', '.jpeg', '.bmp']:
         try:
             import pytesseract
-            print(f"Extracting text from image via OCR: {file_path}")
-            # Try to run pytesseract
-            img = Image.open(file_path)
-            extracted_text = pytesseract.image_to_string(img)
-        except Exception as e:
-            print(f"pytesseract OCR extraction failed: {e}")
-            extracted_text = "[OCR Engine unavailable or Tesseract not installed. Please edit text manually.]"
+        except ImportError as e:
+            print(f"pytesseract is not installed: {e}")
+            extracted_text = "[OCR Engine unavailable: install pytesseract and Tesseract OCR. Please edit text manually.]"
+        else:
+            try:
+                print(f"Extracting text from image via OCR: {file_path}")
+                img = Image.open(file_path)
+                extracted_text = pytesseract.image_to_string(img)
+            except Exception as e:
+                print(f"pytesseract OCR extraction failed: {e}")
+                extracted_text = "[OCR Engine unavailable or Tesseract not installed. Please edit text manually.]"
             
     return extracted_text.strip() if extracted_text else ""
 
