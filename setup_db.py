@@ -6,7 +6,7 @@ def seed_database():
     init_db()
     
     print("Registering default users...")
-    register_user("admin", "admin123", "admin")
+    register_user("admin", "admin123", "admin", email="admin@institution.edu.in")
     register_user("student", "student123", "student", branch="Computer Science", year="3rd Year")
     
     print("Seeding sample college notices...")

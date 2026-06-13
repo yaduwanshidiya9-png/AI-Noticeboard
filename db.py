@@ -5,12 +5,27 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # Path to the SQLite database file
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'noticeboard.db')
+ADMIN_EMAIL_DOMAIN = '.edu.in'
+ADMIN_EMAIL_ERROR_MESSAGE = 'Admin registration requires a valid institutional email ending with .edu.in'
 
 def get_db_connection():
     """Establishes a connection to the SQLite database with row factory enabled."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def is_valid_institutional_email(email):
+    """Returns True when an email ends with the institutional .edu.in suffix."""
+    return bool(email and email.strip().lower().endswith(ADMIN_EMAIL_DOMAIN))
+
+
+def _ensure_users_email_column(cursor):
+    """Adds the users.email column when upgrading an older database schema."""
+    cursor.execute('PRAGMA table_info(users)')
+    columns = [row[1] for row in cursor.fetchall()]
+    if 'email' not in columns:
+        cursor.execute('ALTER TABLE users ADD COLUMN email TEXT')
 
 def init_db():
     """Initializes the database tables if they do not exist."""
@@ -25,11 +40,13 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             role TEXT NOT NULL CHECK(role IN ('admin', 'student')),
+            email TEXT,
             branch TEXT DEFAULT 'All',
             year TEXT DEFAULT 'All',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    _ensure_users_email_column(cursor)
     
     # Create Notices Table
     cursor.execute('''
@@ -54,17 +71,23 @@ def init_db():
 
 # --- User Management Functions ---
 
-def register_user(username, password, role, branch='All', year='All'):
+def register_user(username, password, role, branch='All', year='All', email=None):
     """Registers a new user in the system with a hashed password."""
+    normalized_role = (role or '').lower()
+    normalized_email = (email or '').strip() if email else None
+
+    if normalized_role == 'admin' and not is_valid_institutional_email(normalized_email):
+        return {"success": False, "message": ADMIN_EMAIL_ERROR_MESSAGE}
+
     conn = get_db_connection()
     cursor = conn.cursor()
     hashed_pwd = generate_password_hash(password)
     
     try:
         cursor.execute('''
-            INSERT INTO users (username, password, role, branch, year)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (username, hashed_pwd, role, branch, year))
+            INSERT INTO users (username, password, role, email, branch, year)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (username, hashed_pwd, normalized_role, normalized_email, branch, year))
         conn.commit()
         user_id = cursor.lastrowid
         return {"success": True, "user_id": user_id, "message": "Registration successful."}
@@ -89,6 +112,7 @@ def authenticate_user(username, password):
                 "id": user['id'],
                 "username": user['username'],
                 "role": user['role'],
+                "email": user['email'],
                 "branch": user['branch'],
                 "year": user['year']
             }

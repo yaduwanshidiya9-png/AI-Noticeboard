@@ -8,6 +8,7 @@ from db import (
     init_db, register_user, authenticate_user, 
     add_notice, delete_notice, get_notices, get_notice_by_id
 )
+from db import is_valid_institutional_email, ADMIN_EMAIL_ERROR_MESSAGE
 from model import predict_category
 from engine import generate_summary, detect_deadlines
 from assistant import get_chatbot_response
@@ -60,13 +61,16 @@ def api_register():
     username = data.get('username')
     password = data.get('password')
     role = data.get('role', 'student')
+    email = data.get('email')
     branch = data.get('branch', 'All')
     year = data.get('year', 'All')
     
     if not username or not password:
         return jsonify({"success": False, "message": "Username and password are required."}), 400
+    if (role or '').lower() == 'admin' and not is_valid_institutional_email(email):
+        return jsonify({"success": False, "message": ADMIN_EMAIL_ERROR_MESSAGE}), 400
         
-    result = register_user(username, password, role, branch, year)
+    result = register_user(username, password, role, branch, year, email)
     return jsonify(result)
 
 @app.route('/api/auth/login', methods=['POST'])

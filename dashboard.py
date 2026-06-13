@@ -25,7 +25,7 @@ def is_backend_online():
 
 # Direct imports for standalone flat fallback mode
 try:
-    from db import get_notices, add_notice, delete_notice, authenticate_user, register_user
+    from db import get_notices, add_notice, delete_notice, authenticate_user, register_user, is_valid_institutional_email, ADMIN_EMAIL_ERROR_MESSAGE
     from model import predict_category
     from engine import generate_summary, detect_deadlines
     from assistant import get_chatbot_response
@@ -42,42 +42,24 @@ st.markdown("""
         font-family: 'Outfit', sans-serif;
     }
     .stApp {
-        background: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #1e1b4b 100%);
+        background: #0b1020;
         color: #f3f4f6;
     }
     .glass-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
         padding: 24px;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
     .glass-card:hover {
         transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
-    .hero-banner {
-        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-        padding: 40px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
-    }
-    .hero-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.8rem;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 5px;
-    }
-    .hero-subtitle {
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.9);
-        font-weight: 300;
+        border-color: rgba(129, 140, 248, 0.20);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
     }
     .badge {
         display: inline-block;
@@ -114,6 +96,215 @@ st.markdown("""
         margin-right: 20%;
         margin-bottom: 12px;
     }
+    .auth-page {
+        min-height: auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 0.35rem 1rem 0.75rem;
+    }
+    .auth-page::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: #0b1020;
+        z-index: -1;
+    }
+    .auth-wrap {
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
+    }
+    .auth-badge {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 50;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.14);
+        border: 1px solid rgba(16, 185, 129, 0.32);
+        color: #d1fae5;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    .auth-shell {
+        min-height: auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+    .auth-hero {
+        text-align: center;
+        margin-bottom: 0.7rem;
+        padding: 0 1rem;
+    }
+    .auth-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.14);
+        border: 1px solid rgba(96, 165, 250, 0.20);
+        color: #bfdbfe;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .auth-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.1rem, 4vw, 3.4rem);
+        line-height: 1.05;
+        font-weight: 800;
+        color: #f8fafc;
+        margin: 0.85rem 0 0.45rem;
+    }
+    .auth-subtitle {
+        color: #cbd5e1;
+        font-size: 1rem;
+        line-height: 1.65;
+        max-width: 42rem;
+        margin: 0 auto;
+    }
+    .hero-row {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .hero-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.68rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+    .hero-chip:hover {
+        transform: translateY(-1px);
+        border-color: rgba(96, 165, 250, 0.25);
+        background: rgba(255, 255, 255, 0.06);
+    }
+    .hero-icon {
+        width: 1.8rem;
+        height: 1.8rem;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .auth-card-shell {
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+        padding: 1rem 1.15rem 0.95rem;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+    .auth-card-shell h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        margin-bottom: 0.25rem;
+        color: #f8fafc;
+    }
+    .auth-card-shell p {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+    .auth-tabs {
+        display: flex;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+    }
+    .auth-pill {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: #cbd5e1;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .auth-pill.active {
+        background: rgba(59, 130, 246, 0.18);
+        color: #ffffff;
+        border-color: rgba(129, 140, 248, 0.45);
+    }
+    .auth-note {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-top: 0.5rem;
+    }
+    .block-container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    .stTextInput input, .stSelectbox [data-baseweb="select"] > div, .stTextArea textarea {
+        background: rgba(9, 15, 29, 0.90) !important;
+        color: #f8fafc !important;
+        border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        border-radius: 14px !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+    }
+    .stTextInput input:focus, .stSelectbox [data-baseweb="select"] > div:focus-within, .stTextArea textarea:focus {
+        border-color: rgba(129, 140, 248, 0.7) !important;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18) !important;
+    }
+    div[data-testid="stButton"] button {
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        padding: 0.78rem 1rem;
+        font-weight: 700;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    div[data-testid="stButton"] button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+        filter: brightness(1.05);
+    }
+    @media (max-width: 900px) {
+        .auth-page {
+            padding: 0.25rem 0.5rem 0.5rem;
+        }
+        .auth-title {
+            font-size: clamp(1.8rem, 7vw, 2.4rem);
+        }
+        .auth-card-shell {
+            padding: 0.9rem 0.9rem 0.8rem;
+        }
+        .auth-tabs {
+            gap: 0.45rem;
+        }
+        .auth-pill {
+            padding: 0.68rem 0.75rem;
+        }
+        .hero-chip {
+            padding: 0.62rem 0.78rem;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -129,70 +320,132 @@ if 'ai_preview' not in st.session_state:
 
 API_ONLINE = is_backend_online()
 
-with st.sidebar:
-    st.markdown("<h2 style='font-family:Space Grotesk; font-weight:700;'>🎓 AI NoticeBoard</h2>", unsafe_allow_html=True)
-    
-    if API_ONLINE:
-        st.markdown("<span style='color:#34d399;'>●</span> **Flask REST API:** `CONNECTED`", unsafe_allow_html=True)
-    else:
-        st.markdown("<span style='color:#fbbf24;'>●</span> **Flask REST API:** `OFFLINE (FALLBACK LIVE)`", unsafe_allow_html=True)
-        if not FALLBACK_AVAILABLE:
-            st.error("Error: Local files are unreachable. Ensure database files are present!")
-            st.stop()
-            
-    st.markdown("---")
-    
-    if st.session_state.user is None:
-        st.markdown("### 🔐 User Login")
-        auth_action = st.radio("Select Action", ["Sign In", "Create Account"])
-        
-        login_username = st.text_input("Username", key="auth_user")
-        login_password = st.text_input("Password", type="password", key="auth_pass")
-        
-        reg_role = "student"
-        reg_branch = "All"
-        reg_year = "All"
-        if auth_action == "Create Account":
-            reg_role = st.selectbox("Role", ["student", "admin"])
-            if reg_role == "student":
-                reg_branch = st.selectbox("Branch", ["Computer Science", "Information Technology", "Electronics", "Mechanical", "Civil"])
-                reg_year = st.selectbox("Current Year", ["1st Year", "2nd Year", "3rd Year", "4th Year"])
-                
-        if st.button("Submit Credentials", use_container_width=True):
-            if not login_username or not login_password:
-                st.warning("Please fill in all credential fields!")
-            else:
-                if auth_action == "Sign In":
-                    if API_ONLINE:
-                        try:
-                            res = requests.post(f"{BACKEND_URL}/api/auth/login", json={
-                                "username": login_username,
-                                "password": login_password
-                            })
-                            payload = res.json()
-                            if payload.get("success"):
-                                st.session_state.user = payload["user"]
-                                st.success(f"Welcome, {login_username}!")
-                                st.rerun()
-                            else:
-                                st.error(payload.get("message", "Login failed."))
-                        except Exception as e:
-                            st.error(f"Network error: {e}")
-                    else:
-                        result = authenticate_user(login_username, login_password)
-                        if result["success"]:
-                            st.session_state.user = result["user"]
-                            st.success(f"Welcome, {login_username}! (Offline)")
+if API_ONLINE:
+    st.markdown("<div class='auth-badge'>● API Connected</div>", unsafe_allow_html=True)
+elif not FALLBACK_AVAILABLE:
+    st.error("Error: Local files are unreachable. Ensure database files are present!")
+    st.stop()
+
+if st.session_state.user is None:
+    st.markdown(
+        """
+        <style>
+            [data-testid="stSidebar"], [data-testid="stSidebarNav"], section[data-testid="stSidebar"] {
+                display: none !important;
+                visibility: hidden !important;
+                width: 0 !important;
+                min-width: 0 !important;
+                max-width: 0 !important;
+                flex: 0 0 0 !important;
+            }
+            [data-testid="stAppViewContainer"] .main {
+                padding-top: 0.15rem;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+def render_auth_page():
+    st.markdown("<div class='auth-page'><div class='auth-wrap'><div class='auth-shell'>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class='auth-hero'>
+            <div class='auth-kicker'>AI NoticeBoard</div>
+            <div class='auth-title'>AI-Powered Smart NoticeBoard</div>
+            <div class='auth-subtitle'>Never Miss What Matters</div>
+            <div class='auth-subtitle' style='margin-top:0.7rem;'>A focused campus workspace for notices, summaries, smart search, and deadline-aware communication.</div>
+            <div class='hero-row'>
+                <div class='hero-chip'><div class='hero-icon'>📢</div>Smart Notices</div>
+                <div class='hero-chip'><div class='hero-icon'>🤖</div>AI Summaries</div>
+                <div class='hero-chip'><div class='hero-icon'>🔍</div>Smart Search</div>
+                <div class='hero-chip'><div class='hero-icon'>📅</div>Deadline Detection</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<div class='auth-card-shell'>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='margin-bottom:0.35rem;'>
+            <h2 style='margin:0;'>Access your campus workspace</h2>
+            <p style='margin:0.35rem 0 0;'>Sign in to continue or create a new account for your role.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    auth_action = st.radio("", ["Sign In", "Create Account"], horizontal=True, label_visibility="collapsed")
+    st.markdown(
+        f"<div class='auth-tabs'><div class='auth-pill {'active' if auth_action == 'Sign In' else ''}'>Sign In</div><div class='auth-pill {'active' if auth_action == 'Create Account' else ''}'>Create Account</div></div>",
+        unsafe_allow_html=True,
+    )
+
+    login_username = st.text_input("👤 Username", key="auth_user", placeholder="Enter your username")
+    show_password = st.checkbox("Show password", value=False)
+    password_input_type = "default" if show_password else "password"
+    login_password = st.text_input("🔒 Password", type=password_input_type, key="auth_pass", placeholder="Enter your password")
+
+    reg_role = "student"
+    reg_branch = "All"
+    reg_year = "All"
+    reg_email = ""
+
+    if auth_action == "Create Account":
+        reg_role = st.selectbox("🎓 Role", ["student", "admin"])
+        if reg_role == "student":
+            reg_branch = st.selectbox("🏛️ Branch", ["Computer Science", "Information Technology", "Electronics", "Mechanical", "Civil"])
+            reg_year = st.selectbox("📘 Current Year", ["1st Year", "2nd Year", "3rd Year", "4th Year"])
+        else:
+            reg_email = st.text_input(
+                "✉️ Institutional Email",
+                placeholder="name@institution.edu.in",
+                help="Required for Admin accounts only."
+            )
+            st.caption("Admin accounts must use an institutional email ending in .edu.in.")
+
+    if st.button("Submit Credentials", use_container_width=True):
+        if not login_username or not login_password:
+            st.warning("Please fill in all credential fields!")
+        else:
+            if auth_action == "Sign In":
+                if API_ONLINE:
+                    try:
+                        res = requests.post(f"{BACKEND_URL}/api/auth/login", json={
+                            "username": login_username,
+                            "password": login_password
+                        })
+                        payload = res.json()
+                        if payload.get("success"):
+                            st.session_state.user = payload["user"]
+                            st.success(f"Welcome, {login_username}!")
                             st.rerun()
                         else:
-                            st.error(result["message"])
+                            st.error(payload.get("message", "Login failed."))
+                    except Exception as e:
+                        st.error(f"Network error: {e}")
                 else:
+                    result = authenticate_user(login_username, login_password)
+                    if result["success"]:
+                        st.session_state.user = result["user"]
+                        st.success(f"Welcome, {login_username}! (Offline)")
+                        st.rerun()
+                    else:
+                        st.error(result["message"])
+            else:
+                if reg_role == "admin" and not is_valid_institutional_email(reg_email):
+                    st.error(ADMIN_EMAIL_ERROR_MESSAGE)
+                else:
+                    admin_email = reg_email.strip() if reg_role == "admin" else None
                     if API_ONLINE:
                         try:
                             res = requests.post(f"{BACKEND_URL}/api/auth/register", json={
                                 "username": login_username,
                                 "password": login_password,
                                 "role": reg_role,
+                                "email": admin_email,
                                 "branch": reg_branch,
                                 "year": reg_year
                             })
@@ -204,45 +457,49 @@ with st.sidebar:
                         except Exception as e:
                             st.error(f"Network error: {e}")
                     else:
-                        result = register_user(login_username, login_password, reg_role, reg_branch, reg_year)
+                        result = register_user(login_username, login_password, reg_role, reg_branch, reg_year, admin_email)
                         if result["success"]:
                             st.success("Account created successfully! Please sign in.")
                         else:
                             st.error(result["message"])
-    else:
-        u = st.session_state.user
-        st.markdown(f"### 👋 Welcome, **{u['username']}**")
-        st.markdown(f"**Role:** `{u['role'].upper()}`")
-        if u['role'] == 'student':
-            st.markdown(f"**Branch:** `{u['branch']}`")
-            st.markdown(f"**Year:** `{u['year']}`")
-            
-        st.markdown("---")
-        st.markdown("### 🗺️ Navigation")
-        app_page = st.radio("Go To", [
-            "📋 Main NoticeBoard",
-            "🤖 AI Chatbot Assistant",
-            "🚀 Smart Recommendations",
-            "🛡️ Admin Panel" if u['role'] == 'admin' else None
-        ])
-        
-        st.markdown("---")
-        if st.button("Sign Out 🚪", use_container_width=True):
-            st.session_state.user = None
-            st.session_state.chat_history = []
-            st.session_state.ocr_cache = ""
-            st.session_state.ai_preview = None
-            st.rerun()
+
+    st.markdown("<div class='auth-note'>Secure access for students, faculty, and administrators. The layout adapts automatically on smaller screens.</div>", unsafe_allow_html=True)
+    st.markdown("</div></div></div>", unsafe_allow_html=True)
 
 if st.session_state.user is None:
-    st.markdown("""
-    <div class="hero-banner">
-        <h1 class="hero-title">🎓 AI-Powered Smart NoticeBoard</h1>
-        <p class="hero-subtitle">The next-generation digital noticeboard hub featuring modern OCR, NLP summaries, categorization, and contextual chatbot support.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    st.info("💡 **Welcome!** Please login or register as a student in the sidebar panel to explore.")
+    render_auth_page()
     st.stop()
+
+with st.sidebar:
+    st.markdown("<h2 style='font-family:Space Grotesk; font-weight:700;'>🎓 AI NoticeBoard</h2>", unsafe_allow_html=True)
+    if API_ONLINE:
+        st.markdown("<div class='auth-badge' style='position: static; width: fit-content; margin-top: 0.25rem;'>● API Connected</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div class='auth-badge' style='position: static; width: fit-content; margin-top: 0.25rem; background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.32); color: #fef3c7;'>● API Offline</div>", unsafe_allow_html=True)
+
+u = st.session_state.user
+st.markdown(f"### 👋 Welcome, **{u['username']}**")
+st.markdown(f"**Role:** `{u['role'].upper()}`")
+if u['role'] == 'student':
+    st.markdown(f"**Branch:** `{u['branch']}`")
+    st.markdown(f"**Year:** `{u['year']}`")
+    
+st.markdown("---")
+st.markdown("### 🗺️ Navigation")
+app_page = st.radio("Go To", [
+    "📋 Main NoticeBoard",
+    "🤖 AI Chatbot Assistant",
+    "🚀 Smart Recommendations",
+    "🛡️ Admin Panel" if u['role'] == 'admin' else None
+])
+
+st.markdown("---")
+if st.button("Sign Out 🚪", use_container_width=True):
+    st.session_state.user = None
+    st.session_state.chat_history = []
+    st.session_state.ocr_cache = ""
+    st.session_state.ai_preview = None
+    st.rerun()
 
 USER_ROLE = st.session_state.user['role']
 USER_BRANCH = st.session_state.user['branch']
