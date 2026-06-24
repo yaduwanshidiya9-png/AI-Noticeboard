@@ -1,100 +1,179 @@
+🎓 AI Notice Board System
 
-A smart, AI-powered noticeboard that helps schools and colleges share, prioritize, and personalize notices for students and admins — built with **Flask**, **Streamlit**, and **Machine Learning**.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python">
+  <img src="https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask">
+  <img src="https://img.shields.io/badge/Streamlit-Frontend-red?style=for-the-badge&logo=streamlit">
+  <img src="https://img.shields.io/badge/SQLite-Database-blue?style=for-the-badge&logo=sqlite">
+  <img src="https://img.shields.io/badge/AI%2FML-Powered-green?style=for-the-badge">
+</p><p align="center">
+  <b>Smart • Automated • AI-Powered Notice Management System</b>
+</p>---
 
----
+📌 Overview
 
-## ✨ What is this?
+AI Notice Board System is an intelligent digital noticeboard platform designed for schools, colleges, and educational institutions. The system replaces traditional noticeboards with a smart dashboard that automatically categorizes, prioritizes, and displays notices to the right users.
 
-The **AI Noticeboard System** replaces boring paper noticeboards with an intelligent dashboard that:
-
-- 📌 **Posts & organizes notices** in one clean place
-- 🧠 **Uses ML models** to categorize and prioritize notices automatically
-- 👥 **Personalizes feeds** for students vs. admins
-- ⚡ **Updates in real time** via a Flask REST API
-- 📊 **Visualizes everything** through a beautiful Streamlit dashboard
-
----
-
-## 🏗️ Tech Stack
-
-| Layer | Technology |
-|------|-----------|
-| 🎨 Frontend | Streamlit |
-| ⚙️ Backend | Flask (REST API) |
-| 🗄️ Database | SQLite |
-| 🤖 AI / ML | Pre-trained models (seeded on setup) |
+Using Artificial Intelligence and Machine Learning, the platform improves communication between administrators and students while ensuring important announcements are never missed.
 
 ---
 
-## 🚀 Getting Started
+✨ Key Features
 
-Follow these **3 simple steps** to get the project running locally.
+- 🔐 Secure Login & Authentication
+- 👨‍💼 Admin Dashboard
+- 🎓 Student Dashboard
+- 📢 Create, Update & Delete Notices
+- 🤖 AI-Based Notice Categorization
+- 📊 Analytics & Statistics Dashboard
+- ⚡ Real-Time Notice Updates
+- 🗄️ SQLite Database Integration
+- 🔍 Search & Filter Notices
+- 📱 Responsive User Interface
+- 📈 Notice Priority Management
 
-### 1️⃣ Setup the Database & Pre-train ML Models
+---
 
-Initializes the SQLite database and seeds it with mock notices + trained models.
+🏗️ System Architecture
 
-```bash
+Students/Admin
+       │
+       ▼
+Streamlit Frontend
+       │
+       ▼
+Flask REST API
+       │
+       ▼
+SQLite Database
+       │
+       ▼
+AI / ML Models
+
+---
+
+🛠️ Tech Stack
+
+Category| Technology
+Frontend| Streamlit
+Backend| Flask
+Database| SQLite
+AI/ML| Scikit-Learn
+Language| Python
+API| REST API
+
+---
+
+📂 Project Structure
+
+AI-NoticeBoard-System/
+│
+├── dashboard.py
+├── server.py
+├── setup_db.py
+├── database.db
+├── models/
+├── static/
+├── templates/
+├── requirements.txt
+└── README.md
+
+---
+
+🚀 Installation & Setup
+
+1️⃣ Clone Repository
+
+git clone https://github.com/your-username/AI-NoticeBoard-System.git
+cd AI-NoticeBoard-System
+
+2️⃣ Install Dependencies
+
+pip install -r requirements.txt
+
+3️⃣ Setup Database
+
 python setup_db.py
-```
 
-### 2️⃣ Launch the Flask Backend API
+4️⃣ Start Flask Backend
 
-Starts the REST API server on **port 5000**.
-
-```bash
 python server.py
-```
 
-> 💡 Keep this terminal running.
+5️⃣ Launch Streamlit Dashboard
 
-### 3️⃣ Start the Streamlit Dashboard
-
-Open a **new terminal** and launch the frontend:
-
-```bash
 python -m streamlit run dashboard.py
-```
-
-🎉 Your dashboard will open automatically in the browser!
 
 ---
 
-## 🔐 Default Login Credentials
+🔑 Default Credentials
 
-Use these accounts to test the system out of the box:
+👑 Admin
 
-### 👑 Admin
-```
 Username: admin
 Password: admin123
-```
 
-### 🎒 Student
-```
+🎓 Student
+
 Username: student
 Password: student123
-```
 
 ---
 
-## 🗺️ Project Flow
+🔄 Workflow
 
-```
-   ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-   │  setup_db.py │ ───▶ │  server.py   │ ───▶ │ dashboard.py │
-   │  DB + ML init│      │  Flask API   │      │  Streamlit UI│
-   └──────────────┘      └──────────────┘      └──────────────┘
-```
-
----
-
-## 🧰 Troubleshooting
-
-- **Port 5000 already in use?** → Stop other apps or change the port in `server.py`.
-- **Streamlit not found?** → Run `pip install streamlit flask scikit-learn`.
-- **Database errors?** → Delete the existing `.db` file and re-run `python setup_db.py`.
+1. Admin logs into the system.
+2. Admin creates and manages notices.
+3. AI model categorizes and prioritizes notices.
+4. Notices are stored in SQLite database.
+5. Students receive personalized notice feeds.
+6. Dashboard updates in real time.
 
 ---
 
-## 💖 Enjoy building smarter campuses!
+🎯 Objectives
+
+- Digitize traditional noticeboards.
+- Improve communication between students and administration.
+- Automate notice categorization using AI.
+- Reduce manual effort and paper usage.
+- Provide real-time access to notices.
+
+---
+
+🚀 Future Enhancements
+
+- 📧 Email Notifications
+- 📱 Android/iOS Mobile Application
+- ☁️ Cloud Deployment
+- 🔔 Push Notifications
+- 🤖 Advanced AI Recommendation Engine
+- 🌐 Multi-College Support
+- 📊 Advanced Analytics Dashboard
+
+---
+
+👨‍💻 Team Members
+
+- Dheeraj Patidar
+- Diya Yaduwanshi
+- Piyush Rathore
+- Himanshi Rathore
+- Kritika Chohan
+
+---
+
+📜 License
+
+This project is developed for educational and academic purposes.
+
+---
+
+⭐ Support
+
+If you found this project useful, please give it a ⭐ on GitHub and share it with others.
+
+---
+
+<p align="center">
+Made with ❤️ by Team AI Notice Board
+</p>
