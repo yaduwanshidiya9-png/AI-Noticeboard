@@ -1,15 +1,5 @@
 🎓 AI Notice Board System
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python">
-  <img src="https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask">
-  <img src="https://img.shields.io/badge/Streamlit-Frontend-red?style=for-the-badge&logo=streamlit">
-  <img src="https://img.shields.io/badge/SQLite-Database-blue?style=for-the-badge&logo=sqlite">
-  <img src="https://img.shields.io/badge/AI%2FML-Powered-green?style=for-the-badge">
-</p><p align="center">
-  <b>Smart • Automated • AI-Powered Notice Management System</b>
-</p>---
-
 📌 Overview
 
 AI Notice Board System is an intelligent digital noticeboard platform designed for schools, colleges, and educational institutions. The system replaces traditional noticeboards with a smart dashboard that automatically categorizes, prioritizes, and displays notices to the right users.
@@ -173,7 +163,3 @@ This project is developed for educational and academic purposes.
 If you found this project useful, please give it a ⭐ on GitHub and share it with others.
 
 ---
-
-<p align="center">
-Made with ❤️ by Team AI Notice Board
-</p>
